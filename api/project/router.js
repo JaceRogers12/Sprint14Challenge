@@ -4,6 +4,15 @@ const Projects = require("./model.js");
 
 const router = express.Router();
 
+function checkPayload(req, res, next) {
+    let payload = req.body;
+    if (!payload.project_name) {
+        next({status: 400, message: "project_name is required"})
+    } else {
+        next()
+    }
+}
+
 router.get("/", async (req, res, next) => {
     let allProjects = await Projects.get();
     try {
@@ -13,7 +22,7 @@ router.get("/", async (req, res, next) => {
     }
 })
 
-router.post("/", async (req, res, next) => {
+router.post("/", checkPayload, async (req, res, next) => {
     let newProject = await Projects.insert(req.body);
     try {
         res.status(201).send(newProject)

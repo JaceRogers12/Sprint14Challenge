@@ -4,6 +4,20 @@ const Resources = require("./model.js");
 
 const router = express.Router();
 
+async function checkPayload(req, res, next) {
+    const payload = req.body;
+    if (!payload.resource_name) {
+        next({status: 400, message: "resource_name is required"});
+    } else {
+        let notUnique = await Resources.getByName(payload.resource_name)
+        if (notUnique) {
+            next({status: 400, message: "resource_name must be unique"});
+        } else {
+            next();
+        }
+    }
+}
+
 router.get("/", async (req, res, next) => {
     let allResources = await Resources.get();
     try {
@@ -13,7 +27,7 @@ router.get("/", async (req, res, next) => {
     }
 })
 
-router.post("/", async (req, res, next) => {
+router.post("/", checkPayload, async (req, res, next) => {
     let newResource = await Resources.insert(req.body);
     try {
         res.status(201).send(newResource)

@@ -3,15 +3,27 @@ const db = require("../../data/dbConfig.js");
 
 async function get() {
     const result = await db("resources")
-    return "get resources connected"
+    return result
 }
 
 async function insert(payload) {
+    const [id] = await db("resources")
+        .insert(payload)
     const result = await db("resources")
-    return "insert resources connected"
+        .where("resource_id", id)
+        .first()
+    return result
+}
+
+async function getByName(name) {
+    let selectedName = await db("resources")
+        .where({resource_name: name})
+        .first()
+    return selectedName
 }
 
 module.exports = {
     get,
-    insert
+    insert,
+    getByName
 }

@@ -24,6 +24,7 @@ server.get("*", (req, res, next) => {
 })
 
 server.use((err, req, res, next) => {
+    console.log("We have an error!")
     res.status(err.status || 500)
         .send(err.message || "Well, well, well. It seems we have trouble.")
 })
